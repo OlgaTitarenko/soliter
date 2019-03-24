@@ -1,7 +1,10 @@
+import Card from './Card.js';
+
 export default class Stack {
     constructor({element}) {
         this._element = element;
         this.render();
+
     }
     render() {
         this._element.innerHTML =  `

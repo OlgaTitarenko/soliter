@@ -1,4 +1,3 @@
-import Game from './game/Game';
+import Game from './game/Game.js';
 
-console.log(123);
 const game = new Game({ element: document.querySelector('#gameTable')});

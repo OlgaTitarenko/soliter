@@ -1,7 +1,8 @@
-import Stack from './game/Stack.js';
+import Stack from './Stack.js';
+import Card from './Card.js';
 
 const SUITS = ['♠', '♣', '♦', '♥'];
-const RED_SUITS = ['♦', '♥'];
+
 const AVAILABLE_SIGNS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
 export default class Game {
@@ -11,10 +12,19 @@ export default class Game {
             deck: []
         };
         this.render();
-        this._stack = new Stack({element: document.querySelector('[data-stack="num_2"]')});
-
         this.createDeck();
         this.randomDeck();
+
+        this._stack = new Stack({
+            element : document.querySelector('[data-stack="num_2"]')
+        });
+
+        this._card = new Card({
+            element : document.querySelector('[data-stack="num_1"]'),
+            card : this.state.deck[0]
+        });
+
+
 
     }
 
@@ -24,6 +34,7 @@ export default class Game {
                 let card = {
                     suit: SUITS[i],
                     sing: AVAILABLE_SIGNS[j],
+                    isOpen:false
                 };
                 this.state.deck.push(card);
             }
