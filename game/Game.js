@@ -1,5 +1,5 @@
 import Stack from './Stack.js';
-import Card from './Card.js';
+import Base from './Base.js'
 
 const SUITS = ['♠', '♣', '♦', '♥'];
 
@@ -9,23 +9,88 @@ export default class Game {
     constructor({ element }) {
         this._element = element;
         this.state = {
-            deck: []
+            deck: [],
+            base: [],
+            baseR: [],
+            final_1 : [],
+            final_2 : [],
+            final_3 : [],
+            final_4 : [],
+            stack_1: [],
+            stack_2: [],
+            stack_3: [],
+            stack_4: [],
+            stack_5: [],
+            stack_6: [],
+            stack_7: []
         };
         this.render();
         this.createDeck();
         this.randomDeck();
+        this.distribution();
 
-        this._stack = new Stack({
-            element : document.querySelector('[data-stack="num_2"]')
+        this._stack1 = new Stack({
+            element : this._element.querySelector('[data-stack="num_1"]'),
+            cards : this.state.stack_1
+        });
+        this._stack2 = new Stack({
+            element : this._element.querySelector('[data-stack="num_2"]'),
+            cards : this.state.stack_2
+        });
+        this._stack3 = new Stack({
+            element : this._element.querySelector('[data-stack="num_3"]'),
+            cards : this.state.stack_3
+        });
+        this._stack4 = new Stack({
+            element : this._element.querySelector('[data-stack="num_4"]'),
+            cards : this.state.stack_4
+        });
+        this._stack5 = new Stack({
+            element : this._element.querySelector('[data-stack="num_5"]'),
+            cards : this.state.stack_5
+        });
+        this._stack6 = new Stack({
+            element : this._element.querySelector('[data-stack="num_6"]'),
+            cards : this.state.stack_6
+        });
+        this._stack7 = new Stack({
+            element : this._element.querySelector('[data-stack="num_7"]'),
+            cards : this.state.stack_7
+        });
+        this._base = new Base({
+            element: this._element.querySelector('[data-stack="base"]'),
+            cards: this.state.base
+        });
+        this._baseR = new Base({
+            element : this._element.querySelector('[data-stack="baseR"]'),
+            cards : this.state.baseR
+        });
+        this._final_1 = new Base({
+            element: this._element.querySelector('[data-stack="final_1"]'),
+            cards: this.state.final_1
+        });
+        this._final_2 = new Base({
+            element: this._element.querySelector('[data-stack="final_2"]'),
+            cards: this.state.final_2
+        });
+        this._final_3 = new Base({
+            element: this._element.querySelector('[data-stack="final_3"]'),
+            cards: this.state.final_3
+        });
+        this._final_4 = new Base({
+            element: this._element.querySelector('[data-stack="final_4"]'),
+            cards: this.state.final_4
         });
 
-        this._card = new Card({
-            element : document.querySelector('[data-stack="num_1"]'),
-            card : this.state.deck[0]
+        this._element.addEventListener('click', (event) => {
+            const card = event.target.closest('.card');
+
+            if (!card) {
+                return;
+            }
+            console.log(card.dataset.card);
+            this.onOpenBaseCard(card.dataset.card);
         });
-
-
-
     }
 
     createDeck() {
@@ -50,35 +115,38 @@ export default class Game {
         }
     }
 
+    distribution() {
+        this.state.stack_1 = [this.state.deck[0]];
+        this.state.stack_2 = [this.state.deck[1] , this.state.deck[2]];
+        this.state.stack_3 = this.state.deck.slice(3,6);
+        this.state.stack_4 = this.state.deck.slice(6,10);
+        this.state.stack_5 = this.state.deck.slice(10,15);
+        this.state.stack_6 = this.state.deck.slice(15,21);
+        this.state.stack_7 = this.state.deck.slice(21,28);
+        this.state.base = this.state.deck.slice(28);
+    }
+
+    onOpenBaseCard(data){
+        const sing = data[0];
+        const suit = data[1];
+        let position = null;
+        for (let i = 0; i < this.state.base.length; i++) {
+            let card = this.state.base[i];
+            if (card.suit === suit && card.sing === sing) {
+                card.isOpen = true;
+                position = i;
+            }
+        }
+        const card = this.state.base.splice(position,1);
+
+        this.state.baseR.push(card[0]);
+        this._baseR.render();
+        this._base.render();
+    }
     render() {
         this._element.innerHTML =  `
-     <div class="deck__main">
-            <div data-stack="base" class="placeholder">
-                <div class="card card--black card--closed">Q ♠</div>
-                <div class="card card--black card--closed">K ♠</div>
-                <div class="card card--red card--closed">Q ♦</div>
-                <div class="card card--black card--closed">A ♠</div>
-                <div class="card card--red card--closed">5 ♦</div>
-                <div class="card card--red card--closed">3 ♥</div>
-                <div class="card card--black card--closed">8 ♣</div>
-                <div class="card card--red card--closed">3 ♦</div>
-                <div class="card card--red card--closed">9 ♦</div>
-                <div class="card card--black card--closed">7 ♠</div>
-                <div class="card card--red card--closed">K ♦</div>
-                <div class="card card--red card--closed">7 ♦</div>
-                <div class="card card--black card--closed">5 ♠</div>
-                <div class="card card--red card--closed">4 ♥</div>
-                <div class="card card--black card--closed">Q ♣</div>
-                <div class="card card--black card--closed">6 ♣</div>
-                <div class="card card--black card--closed">4 ♠</div>
-                <div class="card card--red card--closed">7 ♥</div>
-                <div class="card card--black card--closed">8 ♠</div>
-                <div class="card card--black card--closed">6 ♠</div>
-                <div class="card card--black card--closed">10 ♣</div>
-                <div class="card card--black card--closed">4 ♣</div>
-                <div class="card card--red card--closed">2 ♦</div>
-                <div class="card card--red card--closed">5 ♥</div>
-            </div>
+        <div class="deck__main">
+            <div data-stack="base" class="placeholder"></div>
             <div data-stack="baseR" class="placeholder"></div>
         </div>        
         <div class="deck__final">
@@ -88,45 +156,13 @@ export default class Game {
             <div data-stack="final_4" class="placeholder"></div>
         </div>
         <div class="decks__workflow">
-            <div data-stack="num_1" class="placeholder">
-              
-            </div>
+            <div data-stack="num_1" class="placeholder"></div>
             <div data-stack="num_2" class="placeholder"></div>
-            <div data-stack="num_3" class="placeholder">
-                <div class="card card--black card--closed" style="margin-top: 0;">2 ♣</div>
-                <div class="card card--black card--closed" style="margin-top: 30px;">9 ♠</div>
-                <div class="card card--red" style="margin-top: 60px;">8 ♥</div>
-            </div>
-            <div data-stack="num_4" class="placeholder">
-                <div class="card card--black card--closed" style="margin-top: 0px;">3 ♠</div>
-                <div class="card card--red card--closed" style="margin-top: 30px;">Q ♥</div>
-                <div class="card card--black card--closed" style="margin-top: 60px;">A ♣</div>
-                <div class="card card--red" style="margin-top: 90px;">9 ♥</div>
-            </div>
-            <div data-stack="num_5" class="placeholder">
-                <div class="card card--red card--closed" style="margin-top: 0px;">J ♥</div>
-                <div class="card card--red card--closed" style="margin-top: 30px;">A ♥</div>
-                <div class="card card--black card--closed" style="margin-top: 60px;">J ♣</div>
-                <div class="card card--red card--closed" style="margin-top: 90px;">4 ♦</div>
-                <div class="card card--black" style="margin-top: 120px;">3 ♣</div>
-            </div>
-            <div data-stack="num_6" class="placeholder">
-                <div class="card card--black card--closed" style="margin-top: 0px;">5 ♣</div>
-                <div class="card card--red card--closed" style="margin-top: 30px;">2 ♥</div>
-                <div class="card card--red card--closed" style="margin-top: 60px;">A ♦</div>
-                <div class="card card--red card--closed" style="margin-top: 90px;">10 ♦</div>
-                <div class="card card--red card--closed" style="margin-top: 120px;">8 ♦</div>
-                <div class="card card--red" style="margin-top: 150px;">10 ♥</div>
-            </div>
-            <div data-stack="num_7" class="placeholder">
-                <div class="card card--black card--closed" style="margin-top: 0px;">2 ♠</div>
-                <div class="card card--red card--closed" style="margin-top: 30px;">J ♦</div>
-                <div class="card card--black card--closed" style="margin-top: 60px;">7 ♣</div>
-                <div class="card card--black card--closed" style="margin-top: 90px;">10 ♠</div>
-                <div class="card card--red card--closed" style="margin-top: 120px;">K ♥</div>
-                <div class="card card--black card--closed" style="margin-top: 150px;">K ♣</div>
-                <div class="card card--red" style="margin-top: 180px;">6 ♥</div>
-            </div>
+            <div data-stack="num_3" class="placeholder"></div>
+            <div data-stack="num_4" class="placeholder"></div>
+            <div data-stack="num_5" class="placeholder"></div>
+            <div data-stack="num_6" class="placeholder"></div>
+            <div data-stack="num_7" class="placeholder"></div>
         </div>
         <div class="winner">YOU WIN!</div>
      `;
